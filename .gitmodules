@@ -1,0 +1,3 @@
+[submodule "mbed_compile_database_creator"]
+	path = mbed_compile_database_creator
+	url = https://github.com/mypythonscripts/mbed_compile_database_creator.git
