@@ -12,17 +12,19 @@ openocdRunFlag = True
 def openocdThread(openocdProc):
    
     while openocdRunFlag == True:
-        out = openocdProc.stderr.read(1)
-        if out == '' and openocdProc.poll() != None:
-            break
-        if out != '':
-            sys.stdout.write(out.decode())
-            sys.stdout.flush()
+        sys.stdout.write(openocdProc.stderr.readline().decode())
+        #out = openocdProc.stderr.read(1)
+        #if out == '' and openocdProc.poll() != None:
+        #    break
+        #if out != '':
+        #    sys.stdout.write(out.decode())
+        #    sys.stdout.flush()
 
 gccRunFlag = True
 def gccThread(gccProc):
     
     while gccRunFlag == True:
+        #sys.stdout.write(gccProc.stdout.readline().decode())
         out = gccProc.stdout.read(1)
         if out == '' and gccProc.poll() != None:
             break
@@ -42,22 +44,23 @@ gccProc = sp.Popen(GCC_EXECUTABLE + r' .\build\gohei_system4_FW.elf', stdout=sp.
 
 thread_openocd = threading.Thread(target = openocdThread, args=[openocdProc])
 
-
 thread_openocd.start();
 
-time.sleep(5)
+time.sleep(2)
 
 thread_gcc = threading.Thread(target = gccThread, args=[gccProc])
 
 thread_gcc.start()
 
-time.sleep(5)
+time.sleep(2)
 
 #gccProc.communicate(input=b"target remote localhost:3333")
-gccProc.stdin.write(b"target remote localhost:3333")
+gccProc.stdin.write('target remote localhost:3333'.encode("utf8") + b"\n")
+gccProc.stdin.flush()
+#gccProc.stdout.write(b"target remote localhost:3333")
 
-time.sleep(30)
-sys.stdout.write("30sec elapsed")
+time.sleep(10)
+sys.stdout.write("10sec elapsed")
 
 gccRunFlag = False
 openocdRunFlag = False
@@ -65,35 +68,3 @@ openocdRunFlag = False
 openocdProc.kill()
 gccProc.kill()
 
-
-#
-#time.sleep(3)
-#
-#time.sleep(3)
-##gccProc.communicate(input=b"interrupt")
-##time.sleep(1)
-##gccProc.communicate(input=b"monitor reset halt")
-##time.sleep(1)
-##gccProc.communicate(input=b"load")
-##time.sleep(4)
-##time.sleep(1)
-##gccProc.stdin.write(b"interrupt")
-##time.sleep(1)
-##gccProc.stdin.write(b"monitor reset halt")
-##time.sleep(1)
-##gccProc.stdin.write(b"load")
-##time.sleep(4)
-#
-#
-#
-
-#res=openocdProc.communicate()
-#
-#for response in res:
-#    print(response.decode())
-#
-#res = gccProc.communicate()
-#
-#for response in res:
-#    print(response.decode())
-#
